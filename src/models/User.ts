@@ -1,53 +1,21 @@
-import Axios, { AxiosResponse } from "axios";
+import { Eventing } from "./eventing";
+import { Sync } from './Sync';
+import { Attributes } from './Attributes';
 
-interface UserProps {
+export interface UserProps {
   id?: number,
   name?: string,
   age?: number
 };
 
-type Callback = () => void;
+const rootUrl = 'http://localhost:300/users';
 
 export class User {
-  events: { [key: string]: Callback[] } = {};
+  public events: Eventing = new Eventing();
+  public sync: Sync<UserProps> = new Sync<UserProps>(rootUrl);
+  public attributes: Attributes<UserProps>;
 
-  constructor(private data: UserProps){};
-
-  get(propName: string): (string | number) {
-    return this.data[propName];
-  };
-
-  set(update: UserProps): void {
-    Object.assign(this.data, update);
-  };
-
-  on(eventName: string, callback: Callback): void {
-    const handlers = this.events[eventName] || [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
-  };
-
-  trigger(eventName: string): void {
-    const handlers = this.events[eventName];
-
-    if(!handlers || !handlers.length){ return };
-
-    handlers.forEach(callback => callback());
-  }
-
-  fetch(): void {
-    Axios.get(`http://localhost:3000/users/${this.get('id')}`)
-      .then((res: AxiosResponse): void => {
-        this.set(res.data);
-      })
-  }
-
-  save(): void {
-    const id = this.get('id');
-    if(id){
-      Axios.put(`http://localhost:3000/users/${id}`, this.data);
-    } else {
-      Axios.post('http://localhost:3000/users', this.data);
-    }
+  constructor(attrs: UserProps){
+    this.attributes = new Attributes<UserProps>(attrs);
   }
 }

@@ -1984,7 +1984,39 @@ function () {
 }();
 
 exports.Sync = Sync;
-},{"axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
+},{"axios":"node_modules/axios/index.js"}],"src/models/Attributes.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Attributes = void 0;
+
+var Attributes =
+/** @class */
+function () {
+  function Attributes(data) {
+    this.data = data;
+  }
+
+  ;
+
+  Attributes.prototype.get = function (key) {
+    return this.data[key];
+  };
+
+  ;
+
+  Attributes.prototype.set = function (update) {
+    Object.assign(this.data, update);
+  };
+
+  ;
+  return Attributes;
+}();
+
+exports.Attributes = Attributes;
+},{}],"src/models/User.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1996,36 +2028,32 @@ var eventing_1 = require("./eventing");
 
 var Sync_1 = require("./Sync");
 
+var Attributes_1 = require("./Attributes");
+
 ;
 var rootUrl = 'http://localhost:300/users';
 
 var User =
 /** @class */
 function () {
-  function User(data) {
-    this.data = data;
+  function User(attrs) {
     this.events = new eventing_1.Eventing();
     this.sync = new Sync_1.Sync(rootUrl);
+    this.attributes = new Attributes_1.Attributes(attrs);
   }
 
-  ;
-
-  User.prototype.get = function (propName) {
-    return this.data[propName];
-  };
-
-  ;
-
-  User.prototype.set = function (update) {
-    Object.assign(this.data, update);
-  };
-
-  ;
+  Object.defineProperty(User.prototype, "on", {
+    get: function get() {
+      return this.events.on;
+    },
+    enumerable: false,
+    configurable: true
+  });
   return User;
 }();
 
 exports.User = User;
-},{"./eventing":"src/models/eventing.ts","./Sync":"src/models/Sync.ts"}],"src/index.ts":[function(require,module,exports) {
+},{"./eventing":"src/models/eventing.ts","./Sync":"src/models/Sync.ts","./Attributes":"src/models/Attributes.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2037,11 +2065,31 @@ var User_1 = require("./models/User");
 var user = new User_1.User({
   name: 'It\'s A\' Me',
   age: 25
-});
-user.events.on('change', function () {
-  console.log('change!');
-});
-user.events.trigger('change');
+}); // a quick reminder on accessors
+
+var Person =
+/** @class */
+function () {
+  function Person(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  ;
+  Object.defineProperty(Person.prototype, "fullName", {
+    get: function get() {
+      return this.firstName + " " + this.lastName;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  ;
+  return Person;
+}();
+
+;
+var person = new Person('Mike', 'Grace');
+console.log(person.fullName);
 },{"./models/User":"src/models/User.ts"}],"../../../.nvm/versions/node/v14.13.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -2070,7 +2118,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64664" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61836" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

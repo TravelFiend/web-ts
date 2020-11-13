@@ -117,9 +117,95 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/index.ts":[function(require,module,exports) {
-console.log('hi punk');
-},{}],"../../../.nvm/versions/node/v14.13.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+})({"src/views/UserForm.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserForm = void 0;
+
+var UserForm =
+/** @class */
+function () {
+  function UserForm(parent) {
+    this.parent = parent;
+  }
+
+  ;
+
+  UserForm.prototype.eventsMap = function () {
+    return {
+      'click:button': this.onButtonClick,
+      'mouseover:h1': this.onHeaderHover
+    };
+  };
+
+  ;
+
+  UserForm.prototype.onButtonClick = function () {
+    console.log('Button clicked');
+  };
+
+  ;
+
+  UserForm.prototype.onHeaderHover = function () {
+    console.log('h1 was hovered');
+  };
+
+  UserForm.prototype.template = function () {
+    return "\n      <div>\n        <h1>User Form</h1>\n        <input />\n        <button>Click Me!</button>\n      </div>\n    ";
+  };
+
+  ;
+
+  UserForm.prototype.bindEvents = function (fragment) {
+    var eventsMap = this.eventsMap();
+
+    var _loop_1 = function _loop_1(key) {
+      var _a = key.split(':'),
+          eventName = _a[0],
+          selector = _a[1];
+
+      fragment.querySelectorAll(selector).forEach(function (el) {
+        el.addEventListener(eventName, eventsMap[key]);
+      });
+    };
+
+    for (var key in eventsMap) {
+      _loop_1(key);
+    }
+
+    ;
+  };
+
+  ;
+
+  UserForm.prototype.render = function () {
+    var templateElement = document.createElement('template');
+    templateElement.innerHTML = this.template();
+    this.bindEvents(templateElement.content);
+    this.parent.append(templateElement.content);
+  };
+
+  ;
+  return UserForm;
+}();
+
+exports.UserForm = UserForm;
+;
+},{}],"src/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var UserForm_1 = require("./views/UserForm");
+
+var userForm = new UserForm_1.UserForm(document.getElementById('root'));
+userForm.render();
+},{"./views/UserForm":"src/views/UserForm.ts"}],"../../../.nvm/versions/node/v14.13.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -147,7 +233,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61959" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60502" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

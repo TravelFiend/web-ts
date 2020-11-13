@@ -2086,7 +2086,71 @@ function () {
 }();
 
 exports.Eventing = Eventing;
-},{}],"src/models/User.ts":[function(require,module,exports) {
+},{}],"src/models/Collection.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Collection = void 0;
+
+var Eventing_1 = require("./Eventing");
+
+var axios_1 = __importDefault(require("axios"));
+
+var Collection =
+/** @class */
+function () {
+  function Collection(rootUrl, deserialize) {
+    this.rootUrl = rootUrl;
+    this.deserialize = deserialize;
+    this.models = [];
+    this.events = new Eventing_1.Eventing();
+  }
+
+  ;
+  Object.defineProperty(Collection.prototype, "on", {
+    get: function get() {
+      return this.events.on;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  ;
+  Object.defineProperty(Collection.prototype, "trigger", {
+    get: function get() {
+      return this.events.trigger;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  ;
+
+  Collection.prototype.fetch = function () {
+    var _this = this;
+
+    axios_1.default.get(this.rootUrl).then(function (res) {
+      res.data.forEach(function (val) {
+        _this.models.push(_this.deserialize(val));
+      });
+
+      _this.trigger('change');
+    });
+  };
+
+  ;
+  return Collection;
+}();
+
+exports.Collection = Collection;
+;
+},{"./Eventing":"src/models/Eventing.ts","axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -2128,6 +2192,8 @@ var ApiSync_1 = require("./ApiSync");
 
 var Eventing_1 = require("./Eventing");
 
+var Collection_1 = require("./Collection");
+
 ;
 var rootUrl = 'http://localhost:3000/users';
 
@@ -2145,93 +2211,34 @@ function (_super) {
   };
 
   ;
+
+  User.buildUserCollection = function () {
+    return new Collection_1.Collection(rootUrl, function (json) {
+      return User.buildUser(json);
+    });
+  };
+
+  ;
   return User;
 }(Model_1.Model);
 
 exports.User = User;
 ;
-},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./ApiSync":"src/models/ApiSync.ts","./Eventing":"src/models/Eventing.ts"}],"src/models/Collection.ts":[function(require,module,exports) {
-"use strict";
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Collection = void 0;
-
-var User_1 = require("./User");
-
-var Eventing_1 = require("./Eventing");
-
-var axios_1 = __importDefault(require("axios"));
-
-var Collection =
-/** @class */
-function () {
-  function Collection(rootUrl) {
-    this.rootUrl = rootUrl;
-    this.models = [];
-    this.events = new Eventing_1.Eventing();
-  }
-
-  ;
-  Object.defineProperty(Collection.prototype, "on", {
-    get: function get() {
-      return this.events.on;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  ;
-  Object.defineProperty(Collection.prototype, "trigger", {
-    get: function get() {
-      return this.events.trigger;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  ;
-
-  Collection.prototype.fetch = function () {
-    var _this = this;
-
-    axios_1.default.get(this.rootUrl).then(function (res) {
-      res.data.forEach(function (val) {
-        var user = User_1.User.buildUser(val);
-
-        _this.models.push(user);
-      });
-
-      _this.trigger('change');
-    });
-  };
-
-  ;
-  return Collection;
-}();
-
-exports.Collection = Collection;
-;
-},{"./User":"src/models/User.ts","./Eventing":"src/models/Eventing.ts","axios":"node_modules/axios/index.js"}],"src/index.ts":[function(require,module,exports) {
+},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./ApiSync":"src/models/ApiSync.ts","./Eventing":"src/models/Eventing.ts","./Collection":"src/models/Collection.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var Collection_1 = require("./models/Collection");
+var User_1 = require("./models/User");
 
-var collection = new Collection_1.Collection('http://localhost:3000/users');
+var collection = User_1.User.buildUserCollection();
 collection.on('change', function () {
   console.log(collection);
 });
 collection.fetch();
-},{"./models/Collection":"src/models/Collection.ts"}],"../../../.nvm/versions/node/v14.13.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./models/User":"src/models/User.ts"}],"../../../.nvm/versions/node/v14.13.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2259,7 +2266,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56922" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61059" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

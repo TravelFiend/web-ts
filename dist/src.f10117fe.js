@@ -129,29 +129,29 @@ var Eventing =
 /** @class */
 function () {
   function Eventing() {
+    var _this = this;
+
     this.events = {};
+
+    this.on = function (eventName, callback) {
+      var handlers = _this.events[eventName] || [];
+      handlers.push(callback);
+      _this.events[eventName] = handlers;
+    };
+
+    this.trigger = function (eventName) {
+      var handlers = _this.events[eventName];
+
+      if (!handlers || !handlers.length) {
+        return;
+      }
+
+      ;
+      handlers.forEach(function (callback) {
+        return callback();
+      });
+    };
   }
-
-  Eventing.prototype.on = function (eventName, callback) {
-    var handlers = this.events[eventName] || [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
-  };
-
-  ;
-
-  Eventing.prototype.trigger = function (eventName) {
-    var handlers = this.events[eventName];
-
-    if (!handlers || !handlers.length) {
-      return;
-    }
-
-    ;
-    handlers.forEach(function (callback) {
-      return callback();
-    });
-  };
 
   return Eventing;
 }();
@@ -1996,14 +1996,14 @@ var Attributes =
 /** @class */
 function () {
   function Attributes(data) {
+    var _this = this;
+
     this.data = data;
+
+    this.get = function (key) {
+      return _this.data[key];
+    };
   }
-
-  ;
-
-  Attributes.prototype.get = function (key) {
-    return this.data[key];
-  };
 
   ;
 
@@ -2031,7 +2031,7 @@ var Sync_1 = require("./Sync");
 var Attributes_1 = require("./Attributes");
 
 ;
-var rootUrl = 'http://localhost:300/users';
+var rootUrl = 'http://localhost:3000/users';
 
 var User =
 /** @class */
@@ -2042,6 +2042,7 @@ function () {
     this.attributes = new Attributes_1.Attributes(attrs);
   }
 
+  ;
   Object.defineProperty(User.prototype, "on", {
     get: function get() {
       return this.events.on;
@@ -2049,10 +2050,50 @@ function () {
     enumerable: false,
     configurable: true
   });
+  ;
+  Object.defineProperty(User.prototype, "trigger", {
+    get: function get() {
+      return this.events.trigger;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  ;
+  Object.defineProperty(User.prototype, "get", {
+    get: function get() {
+      return this.attributes.get;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  ;
+
+  User.prototype.set = function (update) {
+    this.attributes.set(update);
+    this.events.trigger('change');
+  };
+
+  User.prototype.fetch = function () {
+    var _this = this;
+
+    var id = this.attributes.get('id');
+
+    if (typeof id !== 'number') {
+      throw new Error('Cannot fetch without id');
+    }
+
+    ;
+    this.sync.fetch(id).then(function (res) {
+      _this.set(res.data);
+    });
+  };
+
+  ;
   return User;
 }();
 
 exports.User = User;
+;
 },{"./eventing":"src/models/eventing.ts","./Sync":"src/models/Sync.ts","./Attributes":"src/models/Attributes.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
@@ -2063,33 +2104,12 @@ Object.defineProperty(exports, "__esModule", {
 var User_1 = require("./models/User");
 
 var user = new User_1.User({
-  name: 'It\'s A\' Me',
-  age: 25
-}); // a quick reminder on accessors
-
-var Person =
-/** @class */
-function () {
-  function Person(firstName, lastName) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
-
-  ;
-  Object.defineProperty(Person.prototype, "fullName", {
-    get: function get() {
-      return this.firstName + " " + this.lastName;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  ;
-  return Person;
-}();
-
-;
-var person = new Person('Mike', 'Grace');
-console.log(person.fullName);
+  id: 1
+});
+user.on('change', function () {
+  return console.log(user);
+});
+user.fetch();
 },{"./models/User":"src/models/User.ts"}],"../../../.nvm/versions/node/v14.13.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -2118,7 +2138,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61836" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58481" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

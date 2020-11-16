@@ -9,6 +9,16 @@
       "name": "It's A' Me",
       "age": 25,
       "id": 2
+    },
+    {
+      "name": "BOB BARKER",
+      "age": 87,
+      "id": 3
+    },
+    {
+      "name": "BOB BARKER",
+      "age": 87,
+      "id": 4
     }
   ]
 }
